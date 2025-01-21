@@ -8,14 +8,14 @@ export const databaseProviders = [
       const dataSource = new DataSource({
         type: 'mssql',
         host: 'localhost',
-        port: 3306,
-        username: 'root',
-        password: 'root',
-        database: 'test',
+        port: 1434,
+        username: 'sa',
+        password: 'apal00sa',
+        database: 'NestJS-DB',
         entities: [
             __dirname + '/../**/*.entity{.ts,.js}',
         ],
-        synchronize: true,
+        synchronize: false,
       });
 
       return dataSource.initialize();
