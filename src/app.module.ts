@@ -1,35 +1,28 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
-import { DataSource } from 'typeorm';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
   imports: [
+    UserModule,
     ConfigModule.forRoot({
-      envFilePath: ['.env.devolopment.local']
+      envFilePath: ['.env.development.local'],
     }),
-    TypeOrmModule.forRootAsync(
-      { 
-      imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-         type: 'mssql', host: configService.get<string>('DB_HOST'),
-         port: parseInt(configService.get<string>('DB_PORT'), 10),
-         username: configService.get<string>('DB_USERNAME'),
-         password: configService.get<string>('DB_PASSWORD'),
-         database: configService.get<string>('DB_DATABASE'),
-         entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-         synchronize: true, 
-        }), 
-        inject: [ConfigService], 
-      }),
-
+    TypeOrmModule.forRoot({
+        type: 'postgres',
+        host: process.env.DB_HOST,
+        port: Number(process.env.DB_PORT),
+        username: process.env.DB_USERNAME,
+        password: process.env.DB_PASSWORD,
+        database: process.env.DB_DATABASE,
+        entities: [__dirname + '/**/*.entity{.ts,.js}'],
+        synchronize: true,
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {
-  constructor(private dataSource: DataSource) {}
-}
+export class AppModule {}
